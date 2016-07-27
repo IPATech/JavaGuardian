@@ -8,6 +8,8 @@ public class FFT_Runner {
 	private static double SIGNIFICANCE_THRESHOLD = 1.0; //Minimum significance of a frequency
 
 	public static void main(String[] args) throws IOException {
+		
+		
 
 		//Get the file and set up the scanners
 		Scanner in = new Scanner(System.in);
