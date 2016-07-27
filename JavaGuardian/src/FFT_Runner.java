@@ -37,6 +37,16 @@ public class FFT_Runner {
 	}
 	
 	/**
+	 * Determines the absolute value of a complex number using the pythagorean theorem
+	 * @param re The real component of the complex number
+	 * @param im The imaginary component of the complex number
+	 * @return The absolute value of the complex number
+	 */
+	private static double imAbs(double re, double im) {
+		return Math.sqrt(Math.pow(re, 2) + Math.pow(im, 2));
+	}
+	
+	/**
 	 * Determines the index of the maximum value in an array
 	 * @param array An array of values
 	 * @return The index of the greatest value within the array
