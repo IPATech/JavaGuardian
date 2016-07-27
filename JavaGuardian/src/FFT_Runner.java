@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class FFT_Runner {
@@ -45,13 +46,21 @@ public class FFT_Runner {
 
 		for (int i = 0; i < magnitude[0].length; i++) //fill magnitude with frequencies
 			magnitude[0][i] = i * stepValue;
-		
-		int maxIndex = maxIndex(magnitude[1]);
-		
-		System.out.println(magnitude[0][maxIndex] + " Hz");
-		
+
+		ArrayList<Double> maxValues = getSignificantValues(magnitude);
+		for (int i = 0; i < maxValues.size(); i++)
+			System.out.println(maxValues.get(i) + " Hz");
+
 	}
-	
+
+	private static ArrayList<Double> getSignificantValues(double[][] magnitude) {
+		ArrayList<Double> values = new ArrayList<Double>();
+		for (int i = 0; i < magnitude[1].length; i++)
+			if (magnitude[1][i] >= 1.0)
+				values.add(magnitude[0][i]);
+		return values;
+	}
+
 	/**
 	 * Determines the absolute value of a complex number using the pythagorean theorem
 	 * @param re The real component of the complex number
