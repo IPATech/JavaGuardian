@@ -128,6 +128,12 @@ public class FFT_Runner {
 			return 128;
 		else if (fileLength <= 256)
 			return 256;
+		else if (fileLength <= 512)
+			return 512;
+		else if (fileLength <= 1024)
+			return 1024;
+		else if (fileLength <= 2048)
+			return 2048;
 		else if (fileLength <= 4096)
 			return 4096;
 		else if (fileLength <= 8192)
