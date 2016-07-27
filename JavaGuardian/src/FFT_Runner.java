@@ -53,6 +53,11 @@ public class FFT_Runner {
 
 	}
 
+	/**
+	 * Determines all frequencies that have a magnitude of 1.0 or higher
+	 * @param magnitude A 2D array of frequency and magnitude
+	 * @return An ArrayList containing the significant frequencies
+	 */
 	private static ArrayList<Double> getSignificantValues(double[][] magnitude) {
 		ArrayList<Double> values = new ArrayList<Double>();
 		for (int i = 0; i < magnitude[1].length; i++)
