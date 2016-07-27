@@ -1,0 +1,111 @@
+import java.io.*;
+import java.util.Scanner;
+
+public class FFT_Runner {
+
+	public static void main(String[] args) throws IOException {
+		
+		//Get the file and set up the scanners
+		Scanner in = new Scanner(System.in);
+		System.out.print("Please input the file name of the data you would like analyzed (don't forget the"
+				+ ".txt): ");
+		String fileName = in.nextLine(); //get the input file name
+		in.close();
+		File data = new File(fileName);
+		Scanner fileReader = new Scanner(data);
+		
+		int fileLength = getFileLength(data); 
+		final int N = getN(fileLength);
+		
+		double[] re = new double[N];
+		double[] im = new double[N];
+		
+		/**
+		 * Fill re with the original data. Note that the array's size may be greater than the number of
+		 * data points
+		 */
+		for (int i = 0; i < fileLength; i++)
+			re[i] = fileReader.nextDouble();
+		fileReader.close();
+		
+//		for (int i = 0; i < N; i++) //fill im with zeros, placeholder for future im code
+//			im[i] = 0;
+		
+		double[][] results = analyze(N, re, im);
+		
+		printResults(results[0]); //print the results to a file
+	}
+
+	/**
+	 * Prints the analyzed data to a text file called results
+	 * @param re The real number component of the data
+	 * @throws IOException
+	 */
+	private static void printResults(double[] re) throws IOException {
+		PrintWriter outputFile = new PrintWriter(new FileWriter("results.txt"));
+		for (int i = 0; i < re.length; i++)
+			outputFile.println(((int)(re[i]*1000)/1000.0));
+		outputFile.close();
+	}
+
+	/**
+	 * Applies Fourier analysis to the input data
+	 * @param N The number of values in the data 
+	 * @param re The real numbers
+	 * @param im The imaginary numbers
+	 * @return A 2d array in which the first index is the real number data and the second index is the
+	 * imaginary data
+	 */
+	private static double[][] analyze(int N, double[] re, double[] im) {
+		FFT fft = new FFT(N);
+		fft.fft(re, im); //Convert the data into hertz
+		double[][] results = new double[2][N];
+		results[0] = re;
+		results[1] = im;
+		return results;
+	}
+
+	/**
+	 * Determines the length of the file and then sets the N value to a power of 2 TODO clean up
+	 * @param fileLength
+	 * @return A valid N value
+	 */
+	private static int getN(int fileLength) {
+		if (fileLength < 8)
+			return 8;
+		else if (fileLength <= 16)
+			return 16;
+		else if (fileLength <= 32)
+			return 32;
+		else if (fileLength <= 64)
+			return 64;
+		else if (fileLength <= 128)
+			return 128;
+		else if (fileLength <= 256)
+			return 256;
+		else if (fileLength <= 4096)
+			return 4096;
+		else if (fileLength <= 8192)
+			return 8192;
+		else
+			return fileLength;
+	}
+
+	/**
+	 * Determines the number of lines in the input file
+	 * @param data The input file
+	 * @return The number of lines in the text file
+	 * @throws IOException
+	 */
+	private static int getFileLength(File data) throws IOException {
+		Scanner fileReader = new Scanner(data);
+		int numLines = 0;
+		while (fileReader.hasNext()) {
+			numLines++;
+			fileReader.next();
+		}
+		fileReader.close();
+		return numLines;
+	}
+
+}
