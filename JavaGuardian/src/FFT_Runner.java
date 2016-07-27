@@ -4,7 +4,8 @@ import java.util.Scanner;
 
 public class FFT_Runner {
 
-	private static double SAMPLING_RATE = 100.0;
+	private static double SAMPLING_RATE = 100.0; //Samples per second
+	private static double SIGNIFICANCE_THRESHOLD = 1.0; //Minimum significance of a frequency
 
 	public static void main(String[] args) throws IOException {
 
@@ -54,14 +55,14 @@ public class FFT_Runner {
 	}
 
 	/**
-	 * Determines all frequencies that have a magnitude of 1.0 or higher
+	 * Determines all frequencies that have a magnitude equal to or greater than SIGNIFICANCE_THRESHOLD 
 	 * @param magnitude A 2D array of frequency and magnitude
 	 * @return An ArrayList containing the significant frequencies
 	 */
 	private static ArrayList<Double> getSignificantValues(double[][] magnitude) {
 		ArrayList<Double> values = new ArrayList<Double>();
 		for (int i = 0; i < magnitude[1].length; i++)
-			if (magnitude[1][i] >= 1.0)
+			if (magnitude[1][i] >= SIGNIFICANCE_THRESHOLD)
 				values.add(magnitude[0][i]);
 		return values;
 	}
