@@ -2,6 +2,8 @@ import java.io.*;
 import java.util.Scanner;
 
 public class FFT_Runner {
+	
+	private static double SAMPLING_RATE = 100.0;
 
 	public static void main(String[] args) throws IOException {
 		
@@ -31,9 +33,23 @@ public class FFT_Runner {
 //		for (int i = 0; i < N; i++) //fill im with zeros, placeholder for future im code
 //			im[i] = 0;
 		
-		double[][] results = analyze(N, re, im);
+		double[][] complex = analyze(N, re, im);
+//		printResults(results[0]); //print the results to a file
 		
-		printResults(results[0]); //print the results to a file
+		double[][] magnitude = new double[2][N]; //stores each frequency and its respective magnitude
+		
+		for (int i = 0; i < magnitude[1].length; i++) //fill magnitude with the magnitudes
+			magnitude[1][i] = (2 / N) * imAbs(complex[0][i], complex[1][i]);
+		
+		double stepValue = SAMPLING_RATE/N; //step value for the frequency
+		
+		for (int i = 0; i < magnitude[0].length; i++) //fill magnitude with frequencies
+			magnitude[0][i] = i * stepValue;
+		
+		int maxIndex = maxIndex(magnitude[1]);
+		
+		System.out.println(magnitude[0][maxIndex] + " Hz");
+		
 	}
 	
 	/**
