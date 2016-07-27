@@ -6,6 +6,7 @@ public class FFT_Runner {
 
 	private static double SAMPLING_RATE = 100.0; //Samples per second
 	private static double SIGNIFICANCE_THRESHOLD = 1.0; //Minimum significance of a frequency
+	//hi sidd
 
 	public static void main(String[] args) throws IOException {
 
