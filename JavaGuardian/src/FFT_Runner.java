@@ -1,12 +1,14 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class FFT_Runner {
-	
-	private static double SAMPLING_RATE = 100.0;
+
+	private static double SAMPLING_RATE = 100.0; //Samples per second
+	private static double SIGNIFICANCE_THRESHOLD = 1.0; //Minimum significance of a frequency
 
 	public static void main(String[] args) throws IOException {
-		
+
 		//Get the file and set up the scanners
 		Scanner in = new Scanner(System.in);
 		System.out.print("Please input the file name of the data you would like analyzed (don't forget the"
@@ -15,13 +17,13 @@ public class FFT_Runner {
 		in.close();
 		File data = new File(fileName);
 		Scanner fileReader = new Scanner(data);
-		
+
 		int fileLength = getFileLength(data); 
 		final int N = getN(fileLength);
-		
+
 		double[] re = new double[N];
 		double[] im = new double[N];
-		
+
 		/**
 		 * Fill re with the original data. Note that the array's size may be greater than the number of
 		 * data points
@@ -29,29 +31,42 @@ public class FFT_Runner {
 		for (int i = 0; i < fileLength; i++)
 			re[i] = fileReader.nextDouble();
 		fileReader.close();
-		
-//		for (int i = 0; i < N; i++) //fill im with zeros, placeholder for future im code
-//			im[i] = 0;
-		
+
+		//		for (int i = 0; i < N; i++) //fill im with zeros, placeholder for future im code
+		//			im[i] = 0;
+
 		double[][] complex = analyze(N, re, im);
-//		printResults(results[0]); //print the results to a file
-		
+		//		printResults(results[0]); //print the results to a file
+
 		double[][] magnitude = new double[2][N/2]; //stores each frequency and its respective magnitude
-		
+
 		for (int i = 0; i < magnitude[1].length; i++) //fill magnitude with the magnitudes
 			magnitude[1][i] = (2.0 / (double)N) * imAbs(complex[0][i], complex[1][i]);
-		
+
 		double stepValue = SAMPLING_RATE/N; //step value for the frequency
-		
+
 		for (int i = 0; i < magnitude[0].length; i++) //fill magnitude with frequencies
 			magnitude[0][i] = i * stepValue;
-		
-		int maxIndex = maxIndex(magnitude[1]);
-		
-		System.out.println(magnitude[0][maxIndex] + " Hz");
-		
+
+		ArrayList<Double> maxValues = getSignificantValues(magnitude);
+		for (int i = 0; i < maxValues.size(); i++)
+			System.out.println(maxValues.get(i) + " Hz");
+
 	}
-	
+
+	/**
+	 * Determines all frequencies that have a magnitude equal to or greater than SIGNIFICANCE_THRESHOLD 
+	 * @param magnitude A 2D array of frequency and magnitude
+	 * @return An ArrayList containing the significant frequencies
+	 */
+	private static ArrayList<Double> getSignificantValues(double[][] magnitude) {
+		ArrayList<Double> values = new ArrayList<Double>();
+		for (int i = 0; i < magnitude[1].length; i++)
+			if (magnitude[1][i] >= SIGNIFICANCE_THRESHOLD)
+				values.add(magnitude[0][i]);
+		return values;
+	}
+
 	/**
 	 * Determines the absolute value of a complex number using the pythagorean theorem
 	 * @param re The real component of the complex number
@@ -60,23 +75,6 @@ public class FFT_Runner {
 	 */
 	private static double imAbs(double re, double im) {
 		return Math.sqrt(Math.pow(re, 2.0) + Math.pow(im, 2.0));
-	}
-	
-	/**
-	 * Determines the index of the maximum value in an array
-	 * @param array An array of values
-	 * @return The index of the greatest value within the array
-	 */
-	private static int maxIndex(double[] array) {
-		double maxValue = array[0];
-		int maxIndex = 0;
-		for (int i = 1; i < array.length; i++) {
-			if (array[i] > maxValue) {
-				maxValue = array[i];
-				maxIndex = i;
-			}
-		}
-		return maxIndex;
 	}
 
 	/**
