@@ -36,6 +36,11 @@ public class FFT_Runner {
 		printResults(results[0]); //print the results to a file
 	}
 	
+	/**
+	 * Determines the index of the maximum value in an array
+	 * @param array An array of values
+	 * @return The index of the greatest value within the array
+	 */
 	private static int maxIndex(double[] array) {
 		double maxValue = array[0];
 		int maxIndex = 0;
