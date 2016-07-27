@@ -35,6 +35,18 @@ public class FFT_Runner {
 		
 		printResults(results[0]); //print the results to a file
 	}
+	
+	private static int maxIndex(double[] array) {
+		double maxValue = array[0];
+		int maxIndex = 0;
+		for (int i = 1; i < array.length; i++) {
+			if (array[i] > maxValue) {
+				maxValue = array[i];
+				maxIndex = i;
+			}
+		}
+		return maxIndex;
+	}
 
 	/**
 	 * Prints the analyzed data to a text file called results
