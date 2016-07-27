@@ -101,10 +101,12 @@ public class FFT_Runner {
 	 */
 	private static double[][] analyze(int N, double[] re, double[] im) {
 		FFT fft = new FFT(N);
-		fft.fft(re, im); //Convert the data into hertz
-		double[][] results = new double[2][N];
-		results[0] = re;
-		results[1] = im;
+		fft.fft(re, im); //Convert the data into complex numbers
+		double[][] results = new double[2][N/2]; //Only plots N/2 points because the magnitudes repeat afterwards
+		for (int i = 0; i < results[0].length; i++)
+			results[0][i] = re[i];
+		for (int i = 0; i < results[1].length; i++)
+			results[1][i] = im[i];
 		return results;
 	}
 
