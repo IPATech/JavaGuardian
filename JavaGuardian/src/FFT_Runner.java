@@ -36,7 +36,7 @@ public class FFT_Runner {
 		double[][] complex = analyze(N, re, im);
 //		printResults(results[0]); //print the results to a file
 		
-		double[][] magnitude = new double[2][N]; //stores each frequency and its respective magnitude
+		double[][] magnitude = new double[2][N/2]; //stores each frequency and its respective magnitude
 		
 		for (int i = 0; i < magnitude[1].length; i++) //fill magnitude with the magnitudes
 			magnitude[1][i] = (2 / N) * imAbs(complex[0][i], complex[1][i]);
