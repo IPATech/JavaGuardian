@@ -39,7 +39,7 @@ public class FFT_Runner {
 		double[][] magnitude = new double[2][N/2]; //stores each frequency and its respective magnitude
 		
 		for (int i = 0; i < magnitude[1].length; i++) //fill magnitude with the magnitudes
-			magnitude[1][i] = (2 / N) * imAbs(complex[0][i], complex[1][i]);
+			magnitude[1][i] = (2.0 / (double)N) * imAbs(complex[0][i], complex[1][i]);
 		
 		double stepValue = SAMPLING_RATE/N; //step value for the frequency
 		
@@ -59,7 +59,7 @@ public class FFT_Runner {
 	 * @return The absolute value of the complex number
 	 */
 	private static double imAbs(double re, double im) {
-		return Math.sqrt(Math.pow(re, 2) + Math.pow(im, 2));
+		return Math.sqrt(Math.pow(re, 2.0) + Math.pow(im, 2.0));
 	}
 	
 	/**
