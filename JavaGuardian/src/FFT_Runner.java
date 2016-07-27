@@ -77,23 +77,6 @@ public class FFT_Runner {
 	}
 
 	/**
-	 * Determines the index of the maximum value in an array
-	 * @param array An array of values
-	 * @return The index of the greatest value within the array
-	 */
-	private static int maxIndex(double[] array) {
-		double maxValue = array[0];
-		int maxIndex = 0;
-		for (int i = 1; i < array.length; i++) {
-			if (array[i] > maxValue) {
-				maxValue = array[i];
-				maxIndex = i;
-			}
-		}
-		return maxIndex;
-	}
-
-	/**
 	 * Prints the analyzed data to a text file called results
 	 * @param re The real number component of the data
 	 * @throws IOException
