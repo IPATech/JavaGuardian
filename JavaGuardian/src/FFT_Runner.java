@@ -4,9 +4,9 @@ import java.util.Scanner;
 
 public class FFT_Runner {
 
-	private static double SAMPLING_RATE = 100.0; //Samples per second
+	private static int Fs = 205; //Samples per second
 	private static double SIGNIFICANCE_THRESHOLD = 1.0; //Minimum significance of a frequency
-	//hi sidd
+	
 
 	public static void main(String[] args) throws IOException {
 
@@ -18,12 +18,21 @@ public class FFT_Runner {
 		in.close();
 		File data = new File(fileName);
 		Scanner fileReader = new Scanner(data);
+		
+		/*//gets the sampling rate TODO fix this so no need to hard code
+		 * 
+		System.out.print("Please input the sampling rate of the data: ");
+		Scanner Fs = new Scanner(System.in);
+		int SAMPLING_RATE = Fs.nextInt();
+		Fs.close();*/
 
 		int fileLength = getFileLength(data); 
 		final int N = getN(fileLength);
 
 		double[] re = new double[N];
 		double[] im = new double[N];
+		double[] mag = new double[N];
+		double[] mag_Smoothed = new double [N];
 
 		/**
 		 * Fill re with the original data. Note that the array's size may be greater than the number of
@@ -33,25 +42,31 @@ public class FFT_Runner {
 			re[i] = fileReader.nextDouble();
 		fileReader.close();
 
-		//		for (int i = 0; i < N; i++) //fill im with zeros, placeholder for future im code
-		//			im[i] = 0;
+		for (int i = 0; i < N; i++) 
+			im[i] = 0;
 
 		double[][] complex = analyze(N, re, im);
-		//		printResults(results[0]); //print the results to a file
+		
+		
+		for(int i = 0; i < N; i++) //takes the complex input and calculates magnitude
+		{
+			mag[i] = imAbs(complex[0][i], complex[1][i]);;
+		}
 
-		double[][] magnitude = new double[2][N/2]; //stores each frequency and its respective magnitude
-
-		for (int i = 0; i < magnitude[1].length; i++) //fill magnitude with the magnitudes
-			magnitude[1][i] = (2.0 / (double)N) * imAbs(complex[0][i], complex[1][i]);
-
-		double stepValue = SAMPLING_RATE/N; //step value for the frequency
-
-		for (int i = 0; i < magnitude[0].length; i++) //fill magnitude with frequencies
-			magnitude[0][i] = i * stepValue;
-
-		ArrayList<Double> maxValues = getSignificantValues(magnitude);
+		printResults(complex, mag);
+		
+		
+		System.out.println("The Max Index is: " + getMaxIndex(mag, N, Fs));
+		System.out.println("The Max Freq is: " +  getMaxIndex(mag, N, Fs) * Fs / N);
+		
+	/*	
+	 * It's hard to hard-code the significance especially now
+	 * 
+	 * 
+	 * ArrayList<Double> maxValues = getSignificantValues(mag);
 		for (int i = 0; i < maxValues.size(); i++)
-			System.out.println(maxValues.get(i) + " Hz");
+			System.out.println(maxValues.get(i) + " Hz");		
+	*/		
 
 	}
 
@@ -60,11 +75,11 @@ public class FFT_Runner {
 	 * @param magnitude A 2D array of frequency and magnitude
 	 * @return An ArrayList containing the significant frequencies
 	 */
-	private static ArrayList<Double> getSignificantValues(double[][] magnitude) {
+	private static ArrayList<Double> getSignificantValues(double[] magnitude) {
 		ArrayList<Double> values = new ArrayList<Double>();
-		for (int i = 0; i < magnitude[1].length; i++)
-			if (magnitude[1][i] >= SIGNIFICANCE_THRESHOLD)
-				values.add(magnitude[0][i]);
+		for (int i = 0; i < magnitude.length; i++)
+			if (magnitude[i] >= SIGNIFICANCE_THRESHOLD)
+				values.add(magnitude[i]);
 		return values;
 	}
 
@@ -83,11 +98,21 @@ public class FFT_Runner {
 	 * @param re The real number component of the data
 	 * @throws IOException
 	 */
-	private static void printResults(double[] re) throws IOException {
-		PrintWriter outputFile = new PrintWriter(new FileWriter("results.txt"));
-		for (int i = 0; i < re.length; i++)
-			outputFile.println(((int)(re[i]*1000)/1000.0));
-		outputFile.close();
+	private static void printResults(double[][] complex, double[] mag) throws IOException {
+		PrintWriter outputFile_Re = new PrintWriter(new FileWriter("results_Re.txt"));
+		for (int i = 0; i < complex[0].length; i++)
+			outputFile_Re.println(((int)(complex[0][i]*1000)/1000.0));
+		outputFile_Re.close();
+		
+		PrintWriter outputFile_Im = new PrintWriter(new FileWriter("results_Im.txt"));
+		for (int i = 0; i < complex[1].length; i++)
+			outputFile_Im.println(((int)(complex[1][i]*1000)/1000.0));
+		outputFile_Im.close();
+		
+		PrintWriter outputFile_Mag = new PrintWriter(new FileWriter("results_Mag.txt"));
+		for (int i = 0; i < complex[1].length; i++)
+			outputFile_Mag.println(mag[i]);
+		outputFile_Mag.close();
 	}
 
 	/**
@@ -101,13 +126,53 @@ public class FFT_Runner {
 	private static double[][] analyze(int N, double[] re, double[] im) {
 		FFT fft = new FFT(N);
 		fft.fft(re, im); //Convert the data into complex numbers
-		double[][] results = new double[2][N/2]; //Only plots N/2 points because the magnitudes repeat afterwards
+		double[][] results = new double[2][N]; 
 		for (int i = 0; i < results[0].length; i++)
 			results[0][i] = re[i];
 		for (int i = 0; i < results[1].length; i++)
 			results[1][i] = im[i];
 		return results;
 	}
+	
+	
+	/**
+	 *Identifies the index of the maximum magnitdue 
+	 * @param array1
+	 * @param N
+	 * @param Fs
+	 * @return the max index; frequency is calculated in the main method -- due to locality of Fs
+	 */	
+	private static double getMaxIndex(double[] array1, int N, int Fs)
+	{
+		int n = N / 2;
+		int maxIndex = 1;
+		for(int i = 1; i <= n; 	i++)  //need to ignore the first reading
+		{
+			if(array1[i] > array1[maxIndex])
+			{
+				maxIndex = i;
+			}
+		}
+		return maxIndex;
+	}
+	
+	private static double[] Smooth(double[] mag, int N)
+	{
+		double value = mag[0];
+		int smoothing = 10; //degree of smoothing
+		double[] mag_Smoothed;
+		
+		for(int i = 0; i < N; i++)
+		{
+			double tempValue = mag[i];
+			value += (tempValue - value) / smoothing;
+			mag_Smoothed[i] = value;	
+		}
+		
+		return mag_Smoothed;
+	}
+	
+	
 
 	/**
 	 * Determines the length of the file and then sets the N value to a power of 2 TODO clean up
